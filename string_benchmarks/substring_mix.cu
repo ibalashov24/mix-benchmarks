@@ -2,8 +2,9 @@
 #include <string.h>
 #include <chrono>
 #include <fstream>
+#include <iostream>
 
-#include "benchmark_utils.cuh"
+#include "benchmark_utils.cu"
 
 #define BLOCKS  16
 #define THREADS 64
@@ -15,14 +16,15 @@ enum Benchmark { SPECIALIZED, STANDARD };
 
 __device__ int isSubstring = 0;
 
-__global__ 
-__stage(1)
-    find_substring_mix(
-	    __stage(1) char *string, 
+__global__ void find_substring_mix(
+	     char *string, 
 		char *sample, 
-		__stage(1) int stringLength, 
+	 int stringLength, 
 		int patternLength)
 {
+	
+	printf("kek");
+
 	// Number of symbols of the string processed in this thread
     int packSize = stringLength > BLOCKS*THREADS ? stringLength / (BLOCKS*THREADS) : 1;
 	// Index of the beginning of the current block of processed symobols
@@ -60,35 +62,37 @@ __stage(1)
         }
     }
 
-    return 0;
+    return;
 }
 
 
 int main(int argc, char *argv[])
 {
     // Reading big data
-    ifstream string_file("string.in");
+	std::ifstream string_file("string.in");
     auto string = read_data_to_gpu(string_file, DATA_SIZE);
     string_file.close();
 
     // Reading pattern
-    ifstream pattern_file("pattern.in");
+    std::ifstream pattern_file("pattern.in");
     auto pattern = read_data_to_gpu(pattern_file, PATTERN_SIZE);
     pattern_file.close();
 
     auto timerBegin = std::chrono::high_resolution_clock::now();
-    switch(argv[1])
+    switch(argv[1][0] - '0')
     {
-        case Benchmark.SPECIALIZED:
+        case SPECIALIZED:
             find_substring_mix<<<BLOCKS, THREADS>>>(string, pattern, DATA_SIZE, PATTERN_SIZE);
             break;
-        case Benchmark.STANDARD: 
+        case STANDARD: 
             break;
         default:
             std::cout << "Wrong benchmark type!" << std::endl;
     } 
     cudaDeviceSynchronize();
     auto timerEnd = std::chrono::high_resolution_clock::now();
+
+    std::cout << isSubstring << std::endl;
 
     std::cout << "Execution time: ";
     std::cout << std::chrono::duration_cast<std::chrono::microseconds>(
