@@ -9,6 +9,8 @@ struct Arguments
     std::string benchmark_type;
     std::string data_file;
     std::string pattern_file;
+    bool is_mix;
+    bool is_chunked;
 };
 
 /* Parses command line arguments for benchmark
