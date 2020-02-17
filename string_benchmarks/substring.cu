@@ -29,6 +29,8 @@ void find_substring_naive(
         return;
     }
 
+    printf("kek");
+
     is_entry[position] = false;
 
     for (int i = 0; i < pattern_count; ++i)
@@ -97,8 +99,9 @@ void match_naive(
 
     int blocks = data_size / BLOCK_SIZE;
     int threads = BLOCK_SIZE;
-
-    find_substring_naive<<<blocks, threads>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
+    
+    find_substring_naive<<<10, 10>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
+    cudaDeviceSynchronize();
 
     //TODO: Check search results in some way
 
