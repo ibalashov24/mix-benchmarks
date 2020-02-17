@@ -12,16 +12,17 @@ __device__
 int threadId()
 {
     return blockIdx.x * blockDim.x + threadIdx.x;
-}
 
+} 
+	
 __global__ 
-void find_substring_naive(
-        const char *data, 
-        int data_length, 
+__stage(1) void find_substring_naive(
+        __stage(1) const char *data, 
+        __stage(1) int data_length, 
         const char *patterns, 
         const int *pattern_borders, 
         int pattern_count,
-	bool *is_entry)
+	__stage(1) bool *is_entry)
 {
     auto position = threadId();
     if (position >= data_length)
