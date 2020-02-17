@@ -29,8 +29,6 @@ void find_substring_naive(
         return;
     }
 
-    printf("kek");
-
     is_entry[position] = false;
 
     for (int i = 0; i < pattern_count; ++i)
@@ -40,6 +38,8 @@ void find_substring_naive(
         {
             return;
         }
+
+//	printf("%c", data[i]);
 
         int pattern_begin = i == 0 ? 0 : pattern_borders[i - 1] + 1;
         for (int j = 0; j < pattern_length; ++j)
@@ -100,7 +100,7 @@ void match_naive(
     int blocks = data_size / BLOCK_SIZE;
     int threads = BLOCK_SIZE;
     
-    find_substring_naive<<<10, 10>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
+    find_substring_naive<<<blocks, threads>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
     cudaDeviceSynchronize();
 
     //TODO: Check search results in some way
@@ -171,7 +171,7 @@ int main(int argc, char **argv)
     //std::ifstream string_file(arguments.data_file);
     //auto string = read_data_to_gpu(string_file, arguments.data_length);
     std::ifstream string_file("data.in");
-    auto string = read_data_to_gpu(string_file, 10485760);
+    auto string = read_data_to_gpu(string_file, 104857600);
     string_file.close();
 
     // Reading pattern
@@ -190,11 +190,12 @@ int main(int argc, char **argv)
             pattern, 
             arguments.pattern_length);*/
     int *patt_borders = (int *) malloc(sizeof(int));
-    patt_borders[0] = 10;
+    patt_borders[0] = 1000;
     int *cuda_borders;
     cudaMalloc((void **) &cuda_borders, sizeof(int));
-    cudaMemcpy(cuda_borders, patt_borders, 10, cudaMemcpyHostToDevice);
-    match_naive(string, 10485760, pattern, cuda_borders, 1); 
+    cudaMemcpy(cuda_borders, patt_borders, 1000, cudaMemcpyHostToDevice);
+    match_naive(string, 104857600, pattern, cuda_borders, 1); 
+    //match_kmp(string, 104857600, pattern, cuda_borders, 1);
     auto timerEnd = std::chrono::high_resolution_clock::now();
 
     std::cout << "Execution time: ";
