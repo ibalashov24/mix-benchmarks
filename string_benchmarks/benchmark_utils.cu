@@ -2,17 +2,20 @@
 #include <cstdlib>
 #include <chrono>
 
-const int BLOCK_SIZE = 2097152; // 2MB
+#include "benchmark_utils.cuh"
+
+//#define BLOCK_SIZE 2097152; // 2MB
+static const int BLOCK_SIZE = 2097152;
 
 /**
     Reads data from file to GPU memory in blocks
   */
 char *read_data_to_gpu(std::istream &input, int count)
 {
-    char *data = nullptr;
+    char *data;
     cudaMalloc((void **) &data, count);
 
-    char *buffer = (char *)malloc(BLOCK_SIZE * sizeof(char));
+    char *buffer = (char *) malloc(BLOCK_SIZE * sizeof(char));
     for (int i = 0; i < count / BLOCK_SIZE + 1; ++i)
     {
         input.read(buffer, BLOCK_SIZE);

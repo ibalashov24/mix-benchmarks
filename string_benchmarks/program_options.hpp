@@ -9,6 +9,8 @@ struct Arguments
     std::string benchmark_type;
     std::string data_file;
     std::string pattern_file;
+    int data_length;
+    int pattern_length;
     bool is_mix;
     bool is_chunked;
 };

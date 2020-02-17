@@ -3,19 +3,25 @@
 #include <chrono>
 #include <cstdint>
 
-#include "program_options.hpp"
-#include "benchmark_utils.hpp"
+//#include "program_options.hpp"
+#include "benchmark_utils.cuh"
 
 const int BLOCK_SIZE = 1024; // threads
+
+__device__
+int threadId()
+{
+    return blockIdx.x * blockDim.x + threadIdx.x;
+}
 
 __global__ 
 void find_substring_naive(
         const char *data, 
-        unsigned data_length, 
+        int data_length, 
         const char *patterns, 
-        const uint32_t *pattern_borders, 
+        const int *pattern_borders, 
         int pattern_count,
-        int *is_entry)
+	bool *is_entry)
 {
     auto position = threadId();
     if (position >= data_length)
@@ -23,11 +29,11 @@ void find_substring_naive(
         return;
     }
 
-    is_entry[position] = 0;
+    is_entry[position] = false;
 
     for (int i = 0; i < pattern_count; ++i)
     {
-        int pattern_length = i == 0 ? pattern_borders[0] : pattern_borders[i] - pat;
+        int pattern_length = i == 0 ? pattern_borders[0] : pattern_borders[i] - pattern_borders[i - 1];
         if (position + pattern_length >= data_length)
         {
             return;
@@ -47,11 +53,9 @@ void find_substring_naive(
 }
 
 __global__
-void prefix(
+void prefix_function(
         const char *data, 
-        unsigned data_length, 
-        const char *pattern, 
-        unsigned pattern_length
+        int data_length, 
         int *prefix_table)
 {
     int position = threadId();
@@ -83,20 +87,22 @@ void prefix(
  */
 void match_naive(
         const char *data, 
-        uint32_t data_size, 
+        int data_size, 
         const char *patterns, 
-        const unsigned *pattern_borders, 
-        unsigned pattern_count)
+        const int *pattern_borders, 
+        int pattern_count)
 {
     bool *is_entry;
     cudaMalloc((void **) &is_entry, sizeof(bool) * data_size);
 
-    unsigned blocks = data_size / block_size;
-    unsigned treads = block_size;
+    int blocks = data_size / BLOCK_SIZE;
+    int threads = BLOCK_SIZE;
 
-    find_substring_naive<<blocks, threads>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
+    find_substring_naive<<<blocks, threads>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
 
     //TODO: Check search results in some way
+
+    cudaFree(is_entry);
 }
 
 /**
@@ -104,35 +110,35 @@ void match_naive(
  */
 void match_kmp(
         const char *data, 
-        uint32_t data_size,
+        int data_size,
         const char *patterns, 
         int *pattern_borders, 
-        unsigned pattern_count)
+        int pattern_count)
 {
-    uint32_t *prefix_table;
-    cudaMalloc((void **) &prefix_table, sizeof(uint32_t) * data_size);
+    int *prefix_table;
+    cudaMalloc((void **) &prefix_table, sizeof(int) * data_size);
 
-    char *delimiter = malloc(sizeof(char));
+    char *delimiter = (char *) malloc(sizeof(char));
     delimiter[0] = '#';
 
     // KMP could not handle multiple pattern 
     // in one run effectively, so running for each separately
     for (int i = 0; i < pattern_count; ++i)
     {
-        unsigned blocks = (data_size + pattern_size + 1) / block_size;
-        unsigned treads = block_size;
-
-        int pattern_length = i == 0 ? pattern_borders[0] : pattern_borders[i] - pat; 
+        int pattern_length = i == 0 ? pattern_borders[0] : pattern_borders[i] - pattern_borders[i - 1]; 
         int pattern_begin = i == 0 ? 0 : pattern_borders[i - 1] + 1;
-
-        // Oh, God...
+        
+	// Oh, God...
         char *prefix;
         cudaMalloc((void **) &prefix, sizeof(char) * (pattern_length + 1 + data_size));
         cudaMemcpy(prefix, patterns + pattern_begin, pattern_length, cudaMemcpyDeviceToDevice);
         cudaMemcpy(prefix, delimiter, 1, cudaMemcpyHostToDevice);
         cudaMemcpy(prefix, data, data_size, cudaMemcpyDeviceToDevice);
 
-        prefix<<blocks, threads>>(prefix, pattern_length + data_size + 1, prefix_table);
+        int blocks = (data_size + pattern_length + 1) / BLOCK_SIZE;
+        int threads = BLOCK_SIZE;
+
+        prefix_function<<<blocks, threads>>>(prefix, pattern_length + data_size + 1, prefix_table);
 
         cudaFree(prefix);
 
@@ -145,7 +151,7 @@ void match_kmp(
 void run_benchmarks(
         const std::string &benchmark_type, 
         const char *data, 
-        unsigned data_length,
+        int data_length,
         const char *patterns,
         const int *pattern_lenghts)
 {
@@ -156,26 +162,36 @@ void run_benchmarks(
 
 int main(int argc, char **argv)
 {    // Getting benchmark options
-    Arguments arguments = get_args();
+//    Arguments arguments = get_args();
 
     // Reading big data
-	std::ifstream string_file("string.in");
-    auto string = read_data_to_gpu(arguments.data_file, arguments.data_length);
+    //std::ifstream string_file(arguments.data_file);
+    //auto string = read_data_to_gpu(string_file, arguments.data_length);
+    std::ifstream string_file("data.in");
+    auto string = read_data_to_gpu(string_file, 10485760);
     string_file.close();
 
     // Reading pattern
+    //std::ifstream pattern_file(arguments.pattern_file);
+    //auto pattern = read_data_to_gpu(pattern_file, arguments.pattern_length);
     std::ifstream pattern_file("pattern.in");
-    auto pattern = read_data_to_gpu(arguments.pattern_file, arguments.pattern_length);
+    auto pattern = read_data_to_gpu(pattern_file, 20);
     pattern_file.close();
 
     // Executing benchmark
     auto timerBegin = std::chrono::high_resolution_clock::now();
-    run_benchmarks(
+    /*run_benchmarks(
             arguments.benchmark_type, 
             string, 
             arguments.data_length, 
             pattern, 
-            arguments.pattern_length);
+            arguments.pattern_length);*/
+    int *patt_borders = (int *) malloc(sizeof(int));
+    patt_borders[0] = 10;
+    int *cuda_borders;
+    cudaMalloc((void **) &cuda_borders, sizeof(int));
+    cudaMemcpy(cuda_borders, patt_borders, 10, cudaMemcpyHostToDevice);
+    match_naive(string, 10485760, pattern, cuda_borders, 1); 
     auto timerEnd = std::chrono::high_resolution_clock::now();
 
     std::cout << "Execution time: ";
@@ -183,8 +199,8 @@ int main(int argc, char **argv)
             timerEnd - timerBegin ).count();
     std::cout << std::endl;
 
-    cudaFree(string);
-    cudaFree(pattern);
+//    cudaFree(string);
+//    cudaFree(pattern);
 
     return 0;
 }
