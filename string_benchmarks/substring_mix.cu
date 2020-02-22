@@ -16,13 +16,13 @@ int threadId()
 } 
 	
 __global__ 
-__stage(1) void find_substring_naive(
-        __stage(1) const char *data, 
-        __stage(1) int data_length, 
-        const char *patterns, 
+void find_substring_naive(
+	const char *patterns, 
         const int *pattern_borders, 
         int pattern_count,
-	__stage(1) bool *is_entry)
+        __stage(1) const char *data, 
+        __stage(1) int data_length, 
+	bool *is_entry) __stage(1)
 {
     auto position = threadId();
     if (position >= data_length)
@@ -101,7 +101,7 @@ void match_naive(
     int blocks = data_size / BLOCK_SIZE;
     int threads = BLOCK_SIZE;
     
-    find_substring_naive<<<blocks, threads>>>(data, data_size, patterns, pattern_borders, pattern_count, is_entry);
+    find_substring_naive<<<blocks, threads>>>(patterns, pattern_borders, pattern_count, data, data_size, is_entry);
     cudaDeviceSynchronize();
 
     //TODO: Check search results in some way
