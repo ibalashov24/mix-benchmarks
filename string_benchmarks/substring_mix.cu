@@ -13,9 +13,9 @@ void find_substring_naive(
         const char *patterns, 
         const uint32_t *pattern_borders, 
         int pattern_count,
-        __stage(1) const char *data, 
-        __stage(1) unsigned data_length, 
-        int *is_entry) __stage(1)
+        const char *data, 
+        unsigned data_length, 
+        int *is_entry)
 {
     auto position = threadId();
     if (position >= data_length)
