@@ -14,7 +14,8 @@ po::options_description init_args()
         ("pattern_file,p", po::value<std::string>()->default_value("pattern.in"), "Set filename for pattern")
 	("pattern_count,c", po::value<int>()->default_value(1), "Set pattern count")
 	("pattern_size,a", po::value<int>()->default_value(100), "Set single pattern size in bytes")
-	("data_size,s", po::value<int>()->default_value(1048576), "Set data size in bytes");
+	("data_size,s", po::value<long long>()->default_value(1048576), "Set data size in bytes")
+        ("test_runs,r", po::value<int>()->default_value(1), "Set the number of runs of each test");
 
     return desc;
 }
@@ -35,9 +36,10 @@ Arguments read_arguments(int argc, char** argv)
 
         result.data_file = vm["data_file"].as<std::string>();
         result.pattern_file = vm["pattern_file"].as<std::string>();
-	result.data_length = vm["data_size"].as<int>();
+	result.data_length = vm["data_size"].as<long long>();
 	result.pattern_length = vm["pattern_size"].as<int>();
 	result.pattern_count = vm["pattern_count"].as<int>();
+	result.test_runs = vm["test_runs"].as<int>();
         
     }
     catch(po::error &e)

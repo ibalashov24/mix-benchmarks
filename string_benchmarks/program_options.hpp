@@ -8,9 +8,10 @@ struct Arguments
 {
     std::string data_file;
     std::string pattern_file;
-    int data_length;
+    long long data_length;
     int pattern_length;
     int pattern_count;
+    int test_runs;
 };
 
 /* Parses command line arguments for benchmark
