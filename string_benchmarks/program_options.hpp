@@ -6,16 +6,14 @@
 /// Represents arguments for the benchmark
 struct Arguments
 {
-    std::string benchmark_type;
     std::string data_file;
     std::string pattern_file;
     int data_length;
     int pattern_length;
-    bool is_mix;
-    bool is_chunked;
+    int pattern_count;
 };
 
 /* Parses command line arguments for benchmark
 * @returns Parsed arguments
 */
-Arguments get_args();
+Arguments read_arguments(int argc, char** argv);
