@@ -1,0 +1,58 @@
+clang-8: warning: -lboost_program_options: 'linker' input unused [-Wunused-command-line-argument]
+clang-8: warning: -lcudart_static: 'linker' input unused [-Wunused-command-line-argument]
+clang-8: warning: argument unused during compilation: '-L/usr/local/cuda/lib64' [-Wunused-command-line-argument]
+Stack dump:
+0.	Program arguments: /usr/local/bin/clang-8 -cc1 -triple x86_64-unknown-linux-gnu -aux-triple nvptx64-nvidia-cuda -S -disable-free -disable-llvm-verifier -discard-value-names -main-file-name substring_mix.cu -mrelocation-model static -mthread-model posix -fmath-errno -masm-verbose -mconstructor-aliases -munwind-tables -fuse-init-array -target-cpu x86-64 -dwarf-column-info -debug-info-kind=limited -dwarf-version=4 -debugger-tuning=gdb -momit-leaf-frame-pointer -coverage-notes-file /tmp/tests/llvm_mix_algo/benchmark/substring_mix.gcno -resource-dir /usr/local/lib/clang/8.0.0 -internal-isystem /usr/local/lib/clang/8.0.0/include/cuda_wrappers -internal-isystem /usr/local/cuda-10.0/include -include __clang_cuda_runtime_wrapper.h -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/x86_64-linux-gnu/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/x86_64-linux-gnu/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/c++/7.4.0/backward -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/x86_64-linux-gnu/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/x86_64-linux-gnu/c++/7.4.0 -internal-isystem /usr/lib/gcc/x86_64-linux-gnu/7.4.0/../../../../include/c++/7.4.0/backward -internal-isystem /usr/local/include -internal-isystem /usr/local/lib/clang/8.0.0/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -internal-isystem /usr/local/include -internal-isystem /usr/local/lib/clang/8.0.0/include -internal-externc-isystem /usr/include/x86_64-linux-gnu -internal-externc-isystem /include -internal-externc-isystem /usr/include -O1 --std=c++14 -fdeprecated-macro -fdebug-compilation-dir /tmp/tests/llvm_mix_algo/benchmark -ferror-limit 19 -fmessage-length 0 -pthread -fobjc-runtime=gcc -fcxx-exceptions -fexceptions -fdiagnostics-show-option -o substring_mix.s -x cuda substring_mix.cu -faddrsig 
+1.	<eof> parser at end of file
+2.	Per-module optimization passes
+3.	Running pass 'Multi-Stage Compilation' on module 'substring_mix.cu'.
+#0 0x000056336d2ae2ca llvm::sys::PrintStackTrace(llvm::raw_ostream&) (/usr/local/bin/clang-8+0x23002ca)
+#1 0x000056336d2ac834 llvm::sys::RunSignalHandlers() (/usr/local/bin/clang-8+0x22fe834)
+#2 0x000056336d2ac972 SignalHandler(int) (/usr/local/bin/clang-8+0x22fe972)
+#3 0x00007f2c26dba890 __restore_rt (/lib/x86_64-linux-gnu/libpthread.so.0+0x12890)
+#4 0x000056336dd0d918 llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMetadata(llvm::Metadata*) (/usr/local/bin/clang-8+0x2d5f918)
+#5 0x000056336dd0ddaa llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMDNode(llvm::MDNode*) (/usr/local/bin/clang-8+0x2d5fdaa)
+#6 0x000056336dd0dbbd llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMetadata(llvm::Metadata*) (/usr/local/bin/clang-8+0x2d5fbbd)
+#7 0x000056336dd0ddaa llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMDNode(llvm::MDNode*) (/usr/local/bin/clang-8+0x2d5fdaa)
+#8 0x000056336dd0dbbd llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMetadata(llvm::Metadata*) (/usr/local/bin/clang-8+0x2d5fbbd)
+#9 0x000056336dd0ddaa llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMDNode(llvm::MDNode*) (/usr/local/bin/clang-8+0x2d5fdaa)
+#10 0x000056336dd0dbbd llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageMetadata(llvm::Metadata*) (/usr/local/bin/clang-8+0x2d5fbbd)
+#11 0x000056336dd0ccb9 llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stage(llvm::Value*) (/usr/local/bin/clang-8+0x2d5ecb9)
+#12 0x000056336dd0f7e6 llvm::mix::detail::StagedInstructionBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::visitCallInst(llvm::CallInst&) (/usr/local/bin/clang-8+0x2d617e6)
+#13 0x000056336dd0bfed llvm::InstVisitor<llvm::mix::detail::StagedInstructionBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >, void>::visit(llvm::Instruction&) (/usr/local/bin/clang-8+0x2d5dfed)
+#14 0x000056336dd0c055 llvm::mix::detail::StagedInstructionBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stage(llvm::Instruction*) (/usr/local/bin/clang-8+0x2d5e055)
+#15 0x000056336dd0c2e2 llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stageInstruction(llvm::Instruction*) (/usr/local/bin/clang-8+0x2d5e2e2)
+#16 0x000056336dd0cc7d llvm::mix::StagedIRBuilder<llvm::IRBuilder<llvm::ConstantFolder, llvm::IRBuilderDefaultInserter> >::stage(llvm::Value*) (/usr/local/bin/clang-8+0x2d5ec7d)
+#17 0x000056336dd14103 (anonymous namespace)::Mix::visitMixIntrinsicInst(llvm::IntrinsicInst&) (/usr/local/bin/clang-8+0x2d66103)
+#18 0x000056336dd14d16 (anonymous namespace)::Mix::runOnModule(llvm::Module&) (/usr/local/bin/clang-8+0x2d66d16)
+#19 0x000056336ccf2c49 llvm::legacy::PassManagerImpl::run(llvm::Module&) (/usr/local/bin/clang-8+0x1d44c49)
+#20 0x000056336d4b4291 (anonymous namespace)::EmitAssemblyHelper::EmitAssembly(clang::BackendAction, std::unique_ptr<llvm::raw_pwrite_stream, std::default_delete<llvm::raw_pwrite_stream> >) (/usr/local/bin/clang-8+0x2506291)
+#21 0x000056336d4b6e7c clang::EmitBackendOutput(clang::DiagnosticsEngine&, clang::HeaderSearchOptions const&, clang::CodeGenOptions const&, clang::TargetOptions const&, clang::LangOptions const&, llvm::DataLayout const&, llvm::Module*, clang::BackendAction, clang::BackendOptions const&, std::unique_ptr<llvm::raw_pwrite_stream, std::default_delete<llvm::raw_pwrite_stream> >) (/usr/local/bin/clang-8+0x2508e7c)
+#22 0x000056336dcbb26e clang::BackendConsumer::HandleTranslationUnit(clang::ASTContext&) (/usr/local/bin/clang-8+0x2d0d26e)
+#23 0x000056336e6e28d9 clang::ParseAST(clang::Sema&, bool, bool) (/usr/local/bin/clang-8+0x37348d9)
+#24 0x000056336dcba0b7 clang::CodeGenAction::ExecuteAction() (/usr/local/bin/clang-8+0x2d0c0b7)
+#25 0x000056336d932aa6 clang::FrontendAction::Execute() (/usr/local/bin/clang-8+0x2984aa6)
+#26 0x000056336d8f749c clang::CompilerInstance::ExecuteAction(clang::FrontendAction&) (/usr/local/bin/clang-8+0x294949c)
+#27 0x000056336d9f00f3 clang::ExecuteCompilerInvocation(clang::CompilerInstance*) (/usr/local/bin/clang-8+0x2a420f3)
+#28 0x000056336b9f2218 cc1_main(llvm::ArrayRef<char const*>, char const*, void*) (/usr/local/bin/clang-8+0xa44218)
+#29 0x000056336b95147e main (/usr/local/bin/clang-8+0x9a347e)
+#30 0x00007f2c25e95b97 __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21b97)
+#31 0x000056336b9ef46a _start (/usr/local/bin/clang-8+0xa4146a)
+clang-8: error: unable to execute command: Segmentation fault (core dumped)
+clang-8: error: clang frontend command failed due to signal (use -v to see invocation)
+clang version 8.0.0 
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/local/bin
+clang-8: note: diagnostic msg: PLEASE submit a bug report to  and include the crash backtrace, preprocessed source, and associated run script.
+clang-8: note: diagnostic msg: 
+********************
+
+PLEASE ATTACH THE FOLLOWING FILES TO THE BUG REPORT:
+Preprocessed source(s) and associated run script(s) are located at:
+clang-8: note: diagnostic msg: /tmp/substring_mix-383c9d.cu
+clang-8: note: diagnostic msg: /tmp/substring_mix-617efc.cu
+clang-8: note: diagnostic msg: /tmp/substring_mix-383c9d.sh
+clang-8: note: diagnostic msg: 
+
+********************
