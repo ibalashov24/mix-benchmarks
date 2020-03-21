@@ -43,6 +43,21 @@ void free_gpu_memory(void *pointer)
     cudaFree(pointer);
 }
 
+int *generate_borders(int count, int pattern_length)
+{
+    int *patt_borders = (int *) malloc(count * sizeof(int));
+    for (int i = 0; i < count; ++i)
+	    patt_borders[i] = pattern_length;
+
+    int *cuda_borders;
+    cudaMalloc((void **) &cuda_borders, sizeof(int));
+    cudaMemcpy(cuda_borders, patt_borders, count * sizeof(int), cudaMemcpyHostToDevice);
+
+	free(patt_borders);
+
+    return cuda_borders;
+}
+
 void launch_benchmark(
         void (*spec)(const char *, long long),
         const char *data,

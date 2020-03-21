@@ -7,7 +7,8 @@
 
 // CUDA dependencies
 #include "benchmark_utils.cuh"
-#include "substring_mix.cuh"
+//#include "substring_mix.cuh"
+#include "proxy.cuh"
 
 
 const int BLOCK_COUNT = 8096;
@@ -24,7 +25,8 @@ int run_benchmark(
     bool *is_entry = static_cast<bool *>(alloc_gpu_mem(sizeof(bool) * data_size));
 
 	Compiler C("KEK");
-	C.setFunction(mix_find_substring(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
+	auto kernel = get_kernel();
+	C.setFunction(kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
 	auto *spec = reinterpret_cast<void (*)(const char *, long long)>(C.compile());
 
 	long long time_sum = 0;	
@@ -52,6 +54,9 @@ int main(int argc, char **argv)
     std::ifstream data_file(args.data_file);
     auto string = read_data_to_gpu(data_file, args.data_length);
     data_file.close();
+
+
+    std::cout << "KEK" << std::endl;
     
     // Reading pattern
     std::ifstream pattern_file(args.pattern_file);
@@ -59,7 +64,7 @@ int main(int argc, char **argv)
     pattern_file.close();
 
 	// Creating service structures
-    auto cuda_borders = generate_borders(args.pattern_count);
+    auto cuda_borders = generate_borders(args.pattern_count, args.pattern_length);
 
 	// Launching benchmark
     auto time = run_benchmark(string, args.data_length, pattern, cuda_borders, args.pattern_count, args.test_runs); 
