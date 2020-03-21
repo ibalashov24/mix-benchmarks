@@ -1,5 +1,6 @@
 #pragma once
 
+__global__
 void find_substring(
 		const char *patterns, 
 		const int *pattern_borders, 

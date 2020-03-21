@@ -15,9 +15,10 @@ void find_substring(
         __stage(1) long long data_length, 
 	bool *is_entry) __stage(1)
 {
-    const long long chunk_size = data_length / (BLOCK_COUNT * THREAD_COUNT); 
+	// TODO: FIX
+    const long long chunk_size = data_length / (blockDim.x * 4096); 
 
-    auto thread = threadId();
+    long long thread = threadId();
     for (long long position = thread * chunk_size; position < (thread + 1) * chunk_size; ++position)
     {
     	is_entry[position] = false;

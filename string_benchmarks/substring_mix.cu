@@ -6,6 +6,9 @@
 #include "program_options.hpp"
 #include "benchmark_utils.cuh"
 
+#include "Compiler.h"
+
+
 const int BLOCK_COUNT = 8096;
 const int THREAD_COUNT = 500;
 
@@ -16,7 +19,7 @@ long long threadId()
 } 
 	
 __global__ 
-void find_substring_naive(
+void find_substring(
 	const char *patterns, 
         const int *pattern_borders, 
         int pattern_count,
@@ -52,10 +55,18 @@ void find_substring_naive(
     }
 }
 
+__attribute__((mix(find_substring)))
+llvm::Function *mix_find_substring(
+				llvm::LLVMContext *context, 
+				const char *patterns,
+				const int *pattern_borders,
+				int pattern_count,
+				bool *is_entry);
+
 /**
  * Executes naive substring search algorithm with usual CUDA memory and return average run time
  */
-int  match_naive(
+int match_naive(
         const char *data, 
         long long data_size, 
         const char *patterns, 
@@ -65,19 +76,24 @@ int  match_naive(
 {
     bool *is_entry;
     cudaMalloc((void **) &is_entry, sizeof(bool) * data_size);
-
 	long long time_sum = 0;	
+
+	Compiler C("KEK");
+	C.setFunction(mix_find_substring(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
+	auto *spec = reinterpret_cast<void (*)(const char *, long long)>(C.compile());
+
 	for (int i = 0; i < test_runs; ++i)
 	{
 		auto timerBegin = std::chrono::high_resolution_clock::now();
-		find_substring_naive<<<BLOCK_COUNT, THREAD_COUNT>>>(patterns, pattern_borders, pattern_count, data, data_size, is_entry);
+		spec<<<BLOCK_COUNT, THREAD_COUNT>>>(data, data_size);
 		cudaDeviceSynchronize();
 		auto timerEnd = std::chrono::high_resolution_clock::now();
 
 		time_sum += std::chrono::duration_cast<std::chrono::microseconds>(timerEnd - timerBegin).count();
 	}
-        //TODO: Check search results in some way
-    	cudaFree(is_entry);
+
+	//TODO: Check search results in some way
+	cudaFree(is_entry);
 
 	return time_sum / test_runs;
 }
