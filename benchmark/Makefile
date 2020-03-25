@@ -6,7 +6,7 @@ CUDA_PATH=/usr/local/cuda/lib64
 LINKER_FLAGS=-L/usr/local/cuda/lib64 -L/usr/local/lib -ldl -lrt -pthread -lcudart_static -lcudart `llvm-config --cppflags --cflags --cxxflags --ldflags --system-libs --libs --link-shared --ignore-libllvm` -lboost_program_options -fno-rtti
 
 all: compiler start benchmark
-	$(CXX) $(CFLAGS) Compiler.o Dumper.o Environment.o benchmark_utils.o main.o program_options.o substring_mix.o proxy.o $(LINKER_FLAGS)
+	$(CXX) $(CFLAGS) -o benchmark Compiler.o Dumper.o Environment.o benchmark_utils.o main.o program_options.o substring_mix.o proxy.o $(LINKER_FLAGS)
 
 compiler:
 	$(CXX) $(CFLAGS) -c Compiler.cpp Dumper.cpp Environment.cpp -std=c++$(CXX_STANDARD) -fno-rtti
