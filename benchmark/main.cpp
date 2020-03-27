@@ -7,7 +7,6 @@
 
 // CUDA dependencies
 #include "benchmark_utils.cuh"
-//#include "substring_mix.cuh"
 #include "proxy.cuh"
 
 
@@ -26,6 +25,9 @@ int run_benchmark(
 
 	Compiler C("KEK");
 	auto kernel = get_kernel();
+    // Problem  \|/
+    auto k = kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry);
+    std::cout << "KEK";
 	C.setFunction(kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
 	auto *spec = reinterpret_cast<void (*)(const char *, long long)>(C.compile());
 
@@ -50,19 +52,16 @@ int main(int argc, char **argv)
 	// Getting chmark options
     auto args = read_arguments(argc, argv);
 
-	// Reading data 
+    // Reading data 
     std::ifstream data_file(args.data_file);
     auto string = read_data_to_gpu(data_file, args.data_length);
     data_file.close();
 
-
-    std::cout << "KEK" << std::endl;
-    
     // Reading pattern
     std::ifstream pattern_file(args.pattern_file);
     auto pattern = read_data_to_gpu(pattern_file, args.pattern_length * args.pattern_count);
     pattern_file.close();
-
+    
 	// Creating service structures
     auto cuda_borders = generate_borders(args.pattern_count, args.pattern_length);
 
