@@ -19,37 +19,36 @@ int run_benchmark(
         const char *patterns, 
         const int *pattern_borders, 
         int pattern_count,
-		int test_runs)
+        int test_runs)
 {
     bool *is_entry = static_cast<bool *>(alloc_gpu_mem(sizeof(bool) * data_size));
 
-	Compiler C("KEK");
-	auto kernel = get_kernel();
+    Compiler C("Spec");
+    auto kernel = get_kernel();
     // Problem  \|/
     auto k = kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry);
-    std::cout << "KEK";
-	C.setFunction(kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
-	auto *spec = reinterpret_cast<void (*)(const char *, long long)>(C.compile());
+    C.setFunction(kernel(&C.getContext(), patterns, pattern_borders, pattern_count, is_entry));
+    auto *spec = reinterpret_cast<void (*)(const char *, long long)>(C.compile());
 
-	long long time_sum = 0;	
-	for (int i = 0; i < test_runs; ++i)
-	{ 
-		auto timerBegin = std::chrono::high_resolution_clock::now();
+    long long time_sum = 0; 
+    for (int i = 0; i < test_runs; ++i)
+    { 
+        auto timerBegin = std::chrono::high_resolution_clock::now();
         launch_benchmark(spec, data, data_size, BLOCK_COUNT, THREAD_COUNT);
-		auto timerEnd = std::chrono::high_resolution_clock::now();
+        auto timerEnd = std::chrono::high_resolution_clock::now();
 
-		time_sum += std::chrono::duration_cast<std::chrono::microseconds>(timerEnd - timerBegin).count();
-	}
+        time_sum += std::chrono::duration_cast<std::chrono::microseconds>(timerEnd - timerBegin).count();
+    }
 
-	//TODO: Check search results in some way
+    //TODO: Check search results in some way
     free_gpu_memory(static_cast<void *>(is_entry));
 
-	return time_sum / test_runs;
+    return time_sum / test_runs;
 }
 
 int main(int argc, char **argv)
 {    
-	// Getting chmark options
+    // Getting chmark options
     auto args = read_arguments(argc, argv);
 
     // Reading data 
@@ -62,10 +61,10 @@ int main(int argc, char **argv)
     auto pattern = read_data_to_gpu(pattern_file, args.pattern_length * args.pattern_count);
     pattern_file.close();
     
-	// Creating service structures
+    // Creating service structures
     auto cuda_borders = generate_borders(args.pattern_count, args.pattern_length);
 
-	// Launching benchmark
+    // Launching benchmark
     auto time = run_benchmark(string, args.data_length, pattern, cuda_borders, args.pattern_count, args.test_runs); 
     std::cout << time << std::endl;
 
