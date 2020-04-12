@@ -1,5 +1,6 @@
 #include "substring.h"
 	
+__stage(1)
 int find_substring(
         const struct Char *data, 
         int data_length, 
