@@ -7,6 +7,10 @@ struct Char {
     char c;
 } __attribute((packed, staged));
 
+struct Int {
+    int n;
+} __attribute((packed, staged));
+
 /// Basic non-specialized function
 int find_substring(
         const struct Char *data, 

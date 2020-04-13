@@ -2,27 +2,29 @@
 
 const char Delimiter = '#';
 
+/// Function for changing string "patters#data"
 __stage(1) 
 char get_element(
         const struct Char *data,
         __stage(1) const struct Char *pattern,
-        __stage(1) pattern_length,
-        __stage(1) int pos)
+        __stage(1) int pattern_length,
+        __stage(1) int pos) __stage(1)
 {
     if (pos < pattern_length)
-        return pattern[pos];
+        return pattern[pos].c;
     else if (pos == pattern_length)
         return Delimiter;
     else
-        return data[pos - pattern_length - 1];
+        return data[pos - pattern_length - 1].c;
 }
 
+/// Generates prefix function for the Knuth-Morris-Pratt arlgorithm
 void prefix(
-        _stage(1) struct Int *pi, 
+        __stage(1) int *pi, 
         const struct Char *data, 
         int data_length, 
         __stage(1) const struct Char *pattern, 
-        __stage(1) int pattern_length)
+        __stage(1) int pattern_length) __stage(1)
 {
     for (int i = 0; i < data_length + pattern_length + 1; ++i)
     {
@@ -32,7 +34,7 @@ void prefix(
                 get_element(data, pattern, pattern_length, j))
             j = pi[j - 1];
 
-        if (get_element(idata, pattern, pattern_length, i) == 
+        if (get_element(data, pattern, pattern_length, i) == 
                 get_element(data, pattern, pattern_length, j))
             ++j;
 
@@ -40,6 +42,7 @@ void prefix(
     } 
 }
 	
+/// Knuth-Morris-Pratt algorithm
 __stage(1)
 int find_substring(
         const struct Char *data, 
@@ -47,8 +50,8 @@ int find_substring(
         __stage(1) const struct Char *pattern, 
         __stage(1) int pattern_length) __stage(1)
 {
-    struct Int *pi;
-    pi = memset(data_length + pattern_length + 1); 
+    int *pi;
+    pi = malloc(data_length + pattern_length + 1); 
    
     prefix(pi, data, data_length, pattern, pattern_length);
 
@@ -60,6 +63,7 @@ int find_substring(
     return result;
 }
 
+/// Generator of the specialized function
 __attribute((mix(find_substring)))
 void *mix_find_substring(
         void *context,

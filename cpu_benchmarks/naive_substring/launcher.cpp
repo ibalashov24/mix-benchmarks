@@ -1,11 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include <chrono>
 
 #include "Compiler.h"
 #include "substring.h"
 #include "program_options.hpp"
 
-int main()
+int main(int argc, char *argv[])
 {
 	std::cout << "Naive substring benchmark" << std::endl;
 	
@@ -25,7 +26,7 @@ int main()
 	// Init JIT-compiler
 	Compiler compiler("Naive");
 	compiler.setFunction(mix_find_substring(&compiler.getContext(), pattern, args.pattern_length));
-	auto specizalized = compiler.compile()
+	auto specizalized = compiler.compile();
 
 	// Launch benchmark
 	auto timerBegin = std::chrono::high_resolution_clock::now();
