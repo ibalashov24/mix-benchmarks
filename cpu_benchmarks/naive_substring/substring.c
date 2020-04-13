@@ -7,6 +7,7 @@ int find_substring(
         __stage(1) const struct Char *pattern, 
         __stage(1) int pattern_length) __stage(1)
 {
+    int result = -1;
     for (int i = 0; i < data_length; ++i)
     {
         int j = 0;
@@ -15,10 +16,13 @@ int find_substring(
                 break;
 
         if (j == pattern_length)
-            return i;
+	{
+	    result = i;
+	    break;
+	}
     }
 
-    return -1;
+    return result;
 }
 
 __attribute((mix(find_substring)))
