@@ -1,0 +1,4 @@
+[submodule "cpu_benchmarks/benchmark"]
+	path = cpu_benchmarks/deps/benchmark
+	url = https://github.com/google/benchmark.git
+
