@@ -20,15 +20,15 @@ char *generate_data(long long data_size)
     std::uniform_real_distribution<> dis(65, 122);
 
    auto mem = new char[data_size];
-   std::generate_n(mem, data_size, [dis, gen]() { return (char) dis(gen); });
+   std::generate_n(mem, data_size, [dis, gen]() mutable { return (char) (dis(gen)); });
 
    return mem;
 }
 
 void BM_naive_substring(benchmark::State &state)
 {
-    auto pattern = generate_data(PatternLength);
-    auto data_source = generate_data(DataSourceSize);
+    auto pattern = (Char *) generate_data(PatternLength);
+    auto data_source = (Char *) generate_data(DataSourceSize);
     
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -38,7 +38,7 @@ void BM_naive_substring(benchmark::State &state)
     {
         benchmark::DoNotOptimize(
                 find_substring(
-                    data_source + dis(gen), 
+                    data_source + (long long) (dis(gen)), 
                     state.range(0), 
                     pattern, 
                     PatternLength));
@@ -48,8 +48,8 @@ BENCHMARK(BM_naive_substring)->DenseRange(200, MaxDataSize, DataSizeStep);
 
 void BM_naive_subtring_mix(benchmark::State &state)
 {
-    auto pattern = generate_data(PatternLength);
-    auto data_source = generate_data(DataSourceSize);
+    auto pattern = (Char *) generate_data(PatternLength);
+    auto data_source = (Char *) generate_data(DataSourceSize);
  
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -66,7 +66,7 @@ void BM_naive_subtring_mix(benchmark::State &state)
 
     for (auto _: state)
     {
-        int result = spec(data + dis(gen()), state.range(0));
+        int result = spec(data_source + (long long) (dis(gen)), state.range(0));
     }
 }
 BENCHMARK(BM_naive_subtring_mix)->DenseRange(200, MaxDataSize, DataSizeStep);
