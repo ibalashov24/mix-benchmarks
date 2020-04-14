@@ -62,7 +62,7 @@ Compiler::Compiler(llvm::StringRef Name)
       Ctx(new llvm::LLVMContext) {
   ES.getMainJITDylib().setGenerator(llvm::cantFail(
       llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
-          Target::getDataLayout())));
+          Target::getDataLayout().getGlobalPrefix())));
 }
 
 namespace {
