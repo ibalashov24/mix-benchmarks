@@ -1,0 +1,1 @@
+target_sources(cpu-benchmarks PRIVATE sparce_tensor_product/launcher.cpp sparce_tensor_product/tensor_product.c)
