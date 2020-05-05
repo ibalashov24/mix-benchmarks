@@ -60,9 +60,9 @@ Compiler::Compiler(llvm::StringRef Name)
       CompileLayer(ES, ObjectLayer,
                    llvm::orc::SimpleCompiler(Target::getTargetMachine())),
       Ctx(new llvm::LLVMContext) {
-  ES.getMainJITDylib().setGenerator(llvm::cantFail(
+	  ES.getMainJITDylib().setGenerator(llvm::cantFail(
       llvm::orc::DynamicLibrarySearchGenerator::GetForCurrentProcess(
-          Target::getDataLayout().getGlobalPrefix())));
+          Target::getDataLayout())));
 }
 
 namespace {

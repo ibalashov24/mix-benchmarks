@@ -16,7 +16,7 @@ struct CooItem {
 
 void multiply_tensor(
         unsigned matrix_size,
-        struct Double matrix[],
+        struct Double *matrix,
         unsigned coo_size,
         struct CooItem coo[],
         struct CooItem out[]); 

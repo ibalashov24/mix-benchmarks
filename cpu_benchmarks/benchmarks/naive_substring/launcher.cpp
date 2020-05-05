@@ -18,7 +18,7 @@ const long long StartSize = 4194304;        // 400mb
 const long long DataSourceSize = 10737418240; // 10gb
 const long long MaxDataSize = 33554432;     // 3200mb 
 const long long DataSizeStep = 4194304;     // 400mb
-const long long PatternLength = 20;          // 200 bytes
+const long long PatternLength = 200;          // 200 bytes
 
 
 char *generate_data(long long data_size)

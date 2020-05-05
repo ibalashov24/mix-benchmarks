@@ -2,10 +2,10 @@
 	
 void multiply_tensor(
         unsigned matrix_size,
-        struct Double matrix[][matrix_size],
+        struct Double *matrix,
         __stage(1) unsigned coo_size,
         __stage(1) struct CooItem coo[coo_size],
-        __stage(1) CooItem out[coo_size + matrix_size * matrix_size]) __stage(1) 
+        __stage(1) struct CooItem out[coo_size + matrix_size * matrix_size]) __stage(1) 
 {
     for (int i = 0; i < coo_size; ++i)
     {
@@ -13,11 +13,11 @@ void multiply_tensor(
         {
             for (int k = 0; k < matrix_size; ++k)
             {
-                out[matrix_size * matrix_size * i + j * matrix_size + k] = 
-                    CooItem { 
-                        coo[i].row * matrix_size + j,
-                        coo[i].col * matrix_size + k,
-                        coo[i].value * matrix[j][k] };
+                int current_pos = matrix_size * matrix_size * i + j * matrix_size + k;
+
+                out[current_pos].row = coo[i].row * matrix_size + j;
+                out[current_pos].col = coo[i].col * matrix_size + k;
+                out[current_pos].value = coo[i].value * matrix[j * matrix_size + k].c;
             }
         }
     }
