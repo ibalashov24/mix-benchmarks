@@ -9,5 +9,6 @@ target_include_directories(cpu-benchmarks PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 #add_subdirectory(naive_substring)
 #add_subdirectory(jones_naive_benchmark)
-add_subdirectory(sparce_tensor_product)
+#add_subdirectory(sparce_tensor_product)
+add_subdirectory(matrix_convolution)
 #add_subdirectory(kmp_benchmark)
