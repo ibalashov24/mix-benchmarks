@@ -5,7 +5,6 @@
 
 #include "benchmark_utils.cuh"
 
-//#define BLOCK_SIZE 2097152; // 2MB
 static const int BLOCK_SIZE = 2097152;
 
 /**

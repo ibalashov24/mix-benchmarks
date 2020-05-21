@@ -71,5 +71,6 @@ int main(int argc, char **argv)
     free_gpu_memory(string);
     free_gpu_memory(pattern);
     free_gpu_memory(cuda_borders);
+    
     return 0;
 }
