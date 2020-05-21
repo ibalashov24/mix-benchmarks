@@ -9,11 +9,11 @@ struct Double {
 
 /// Basic non-specialized function
 void apply_convolution(
-		   unsigned matrix_height,
+           unsigned matrix_height,
            unsigned matrix_width,
            double matrix[], 
-		   unsigned kernel_dim,
-		   struct Double *kernel, 
+           unsigned kernel_dim,
+           struct Double *kernel, 
            double result[]);
 
 /// Generates specialized function on pattern

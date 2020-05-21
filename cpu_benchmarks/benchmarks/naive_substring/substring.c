@@ -1,5 +1,6 @@
 #include "substring.h"
-	
+    
+// Naive substring search
 __stage(1)
 long long find_substring(
         __stage(1) const struct Char *data, 
@@ -25,6 +26,7 @@ long long find_substring(
     return result;
 }
 
+// Specialized function generator
 __attribute((mix(find_substring)))
 void *mix_find_substring(
         void *context,

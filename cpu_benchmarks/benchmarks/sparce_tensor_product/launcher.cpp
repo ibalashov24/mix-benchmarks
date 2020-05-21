@@ -3,17 +3,18 @@
 #include <random>
 
 #include "../Compiler.h"
-#include "benchmark/benchmark.h"
 #include "tensor_product.h"
 
-const unsigned MaxNonZeroCount = 32768000; // 50mb summary (1 item == 16 bytes)
-const unsigned StaticMatrixSize = 5;
-const unsigned MaxAbsValue = 100;
+#include "benchmark/benchmark.h"
 
-const unsigned MinTestSize = 3276800; // 5mb summary
-const unsigned MaxTestSize = 19660800; // 30mb
-const unsigned TestSizeStep = 3276800; // 5mb
+const unsigned MaxNonZeroCount = 32768000;  // 50mb summary (1 item == 16 bytes)
+const unsigned StaticMatrixSize = 5;        
+const unsigned MaxAbsValue = 100;           // Maximal absolute value in the matrix 
+const unsigned MinTestSize = 3276800;       // 5mb summary
+const unsigned MaxTestSize = 19660800;      // 30mb
+const unsigned TestSizeStep = 3276800;      // 5mb
 
+// Generates pseudorandom sparce matrix
 CooItem *generate_sparse_matrix()
 {
     std::random_device rd;
@@ -37,6 +38,7 @@ CooItem *generate_sparse_matrix()
     return result; 
 }
 
+// Generates pseudorandom dense matrix
 double *generate_static_matrix()
 {
     double *result = new double[StaticMatrixSize * StaticMatrixSize];
@@ -52,6 +54,7 @@ double *generate_static_matrix()
     return result;
 }
 
+// Benchmark without specialization
 void BM_sparse_multiplication(benchmark::State &state)
 {
     auto test_size = state.range(0); 
@@ -76,6 +79,7 @@ void BM_sparse_multiplication(benchmark::State &state)
 }
 BENCHMARK(BM_sparse_multiplication)->DenseRange(MinTestSize, MaxTestSize, TestSizeStep);
 
+// Benchmark with specialization on static dense matrix
 void BM_sparse_multiplication_mix(benchmark::State &state)
 {
     auto test_size = state.range(0); 
@@ -87,7 +91,7 @@ void BM_sparse_multiplication_mix(benchmark::State &state)
     auto sparse_matrix = generate_sparse_matrix();
     auto static_matrix = generate_static_matrix();
 
-    // Generate specialized function
+    // Generating specialized function
     Compiler compiler("Tensor");
     compiler.setFunction(
             mix_multiply_tensor(

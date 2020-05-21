@@ -14,6 +14,7 @@ struct CooItem {
     double value;
 };
 
+// Non-specialized function 
 void multiply_tensor(
         unsigned matrix_size,
         struct Double *matrix,
@@ -21,6 +22,7 @@ void multiply_tensor(
         struct CooItem coo[],
         struct CooItem out[]); 
 
+// Generates specialized function on dense matrix
 void *mix_multiply_tensor(
         void *context,
         unsigned matrix_size,

@@ -1,12 +1,15 @@
 #include "convolution.h"
 
+// Calculates the sum of adjacent cells 
+// of the matrix multiplied 
+// by corresponing kernel elements
  __stage(1)
 double sum_adjacent(
-		   __stage(1) unsigned matrix_height,
+           __stage(1) unsigned matrix_height,
            __stage(1) unsigned matrix_width,
            __stage(1) double matrix[matrix_height * matrix_width], 
-		   unsigned kernel_dim,
-		   struct Double *kernel,
+           unsigned kernel_dim,
+           struct Double *kernel,
            __stage(1) unsigned matrix_i, 
            __stage(1) unsigned matrix_j) __stage(1)
 {
@@ -20,12 +23,14 @@ double sum_adjacent(
     return current_sum;
 }
 
+// Applies convolution with given kernel 
+// to the given matrix-like image
 void apply_convolution(
-		   __stage(1) unsigned matrix_height,
+           __stage(1) unsigned matrix_height,
            __stage(1) unsigned matrix_width,
            __stage(1) double matrix[matrix_height * matrix_width], 
-		   unsigned kernel_dim,
-		   struct Double *kernel, 
+           unsigned kernel_dim,
+           struct Double *kernel, 
            __stage(1) double result[matrix_height * matrix_width]) __stage(1)
 {
     for (unsigned i = kernel_dim / 2; i < matrix_height - kernel_dim / 2; ++i)
@@ -41,5 +46,6 @@ void apply_convolution(
         }
 }
 
+// Generates specialized residual function
 __attribute__((mix(apply_convolution)))
 void *apply_convolution_mix(void *context, unsigned kernel_dim, struct Double *kernel);

@@ -8,31 +8,28 @@
 
 #include "benchmark/benchmark.h"
 
-//const long long StartSize = 419430400;        // 400mb
-//const long long DataSourceSize = 10737418240; // 10gb
-//const long long MaxDataSize = 3355443200;     // 3200mb 
-//const long long DataSizeStep = 419430400;     // 400mb
-//const long long PatternLength = 200;          // 200 bytes
-
-const unsigned MaxMatrixHeight = 2500;     // 3433mb of full matrix
-const unsigned MaxMatrixWidth = 2500;
-const unsigned DataSizeStep = 500;     // 95mb
+const unsigned MaxMatrixHeight = 2500;      // 3433mb of full matrix
+const unsigned MaxMatrixWidth = 2500;  
+const unsigned DataSizeStep = 500;          // 95mb
 const unsigned KernelDim = 3;
 
+// Put your convolution kernel here
 double t_kernel[3][3] = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
 
+// Generates pseudorandom double array with given size
 double *generate_data(long long data_size)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(-100.0, 100.0);
 
-   auto mem = new double[data_size];
-   std::generate_n(mem, data_size, [dis, gen]() mutable { return (double) (dis(gen)); });
+    auto mem = new double[data_size];
+    std::generate_n(mem, data_size, [dis, gen]() mutable { return (double) (dis(gen)); });
 
-   return mem;
+    return mem;
 }
 
+// Benchmark without specialization
 void BM_convolution(benchmark::State &state)
 {
     auto pattern = (Double *) generate_data(KernelDim * KernelDim);
@@ -45,16 +42,14 @@ void BM_convolution(benchmark::State &state)
             MaxMatrixHeight * MaxMatrixWidth - state.range(0) * state.range(0) - 1);
 
     auto result = new double[MaxMatrixHeight * MaxMatrixWidth];
-
     for (auto _: state) 
     {
-	    apply_convolution(
+        apply_convolution(
                     state.range(0), 
                     state.range(0), 
                     data_source + (unsigned) (dis(gen)), 
                     KernelDim,
                     (Double *) t_kernel,
-//                    pattern, 
                     result);
     }
 
@@ -64,6 +59,7 @@ void BM_convolution(benchmark::State &state)
 }                       
 BENCHMARK(BM_convolution)->DenseRange(DataSizeStep, MaxMatrixHeight, DataSizeStep);
 
+// Benchmark with specialization on the kernel
 void BM_convolution_mix(benchmark::State &state)
 {
     auto pattern = (Double *) generate_data(KernelDim * KernelDim);
@@ -77,7 +73,7 @@ void BM_convolution_mix(benchmark::State &state)
 
     auto result = new double[MaxMatrixHeight * MaxMatrixWidth];
     
-    // Generate specialized function
+    // Generating specialized function
     Compiler compiler("Naive");
     compiler.setFunction(
             apply_convolution_mix(
@@ -88,7 +84,7 @@ void BM_convolution_mix(benchmark::State &state)
 
     for (auto _: state)
     {
-	    auto current_data = data_source + (unsigned) (dis(gen));
+        auto current_data = data_source + (unsigned) (dis(gen));
         spec(
                 state.range(0), 
                 state.range(0),

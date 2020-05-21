@@ -1,5 +1,8 @@
 #include "tensor_product.h"
-	
+
+// Performs tensor product of the given 
+// sparce matrix in COOrdianate representation
+// and dense matrix
 void multiply_tensor(
         unsigned matrix_size,
         struct Double *matrix,
@@ -7,13 +10,13 @@ void multiply_tensor(
         __stage(1) struct CooItem coo[coo_size],
         __stage(1) struct CooItem out[coo_size + matrix_size * matrix_size]) __stage(1) 
 {
-    for (int i = 0; i < coo_size; ++i)
+    for (size_t i = 0; i < coo_size; ++i)
     {
-        for (int j = 0; j < matrix_size; ++j)
+        for (size_t j = 0; j < matrix_size; ++j)
         {
-            for (int k = 0; k < matrix_size; ++k)
+            for (size_t k = 0; k < matrix_size; ++k)
             {
-                int current_pos = matrix_size * matrix_size * i + j * matrix_size + k;
+                size_t current_pos = matrix_size * matrix_size * i + j * matrix_size + k;
 
                 out[current_pos].row = coo[i].row * matrix_size + j;
                 out[current_pos].col = coo[i].col * matrix_size + k;
@@ -23,6 +26,8 @@ void multiply_tensor(
     }
 }
 
+// Generates residual function 
+// specialized on dense matrix
 __attribute__((mix(multiply_tensor)))
 void *mix_multiply_tensor(
         void *context,
