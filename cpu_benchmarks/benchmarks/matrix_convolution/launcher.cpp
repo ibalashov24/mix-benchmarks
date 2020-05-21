@@ -14,11 +14,12 @@
 //const long long DataSizeStep = 419430400;     // 400mb
 //const long long PatternLength = 200;          // 200 bytes
 
-const unsigned MaxMatrixHeight = 60000;     // 3433mb of full matrix
-const unsigned MaxMatrixWidth = 60000;
-const unsigned DataSizeStep = 10000;     // 95mb
+const unsigned MaxMatrixHeight = 2500;     // 3433mb of full matrix
+const unsigned MaxMatrixWidth = 2500;
+const unsigned DataSizeStep = 500;     // 95mb
 const unsigned KernelDim = 3;
 
+double t_kernel[3][3] = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
 
 double *generate_data(long long data_size)
 {
@@ -34,25 +35,26 @@ double *generate_data(long long data_size)
 
 void BM_convolution(benchmark::State &state)
 {
-    auto pattern = (double *) generate_data(KernelDim * KernelDim);
-    auto data_source = (Double *) generate_data(MaxMatrixHeight * MaxMatrixWidth);
+    auto pattern = (Double *) generate_data(KernelDim * KernelDim);
+    auto data_source = (double *) generate_data(MaxMatrixHeight * MaxMatrixWidth);
     
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(
+    std::uniform_real_distribution<> dis(
             0, 
-            MaxMatrixHeight * MaxMatrixWidth - state.range(0) - 1);
+            MaxMatrixHeight * MaxMatrixWidth - state.range(0) * state.range(0) - 1);
 
     auto result = new double[MaxMatrixHeight * MaxMatrixWidth];
 
     for (auto _: state) 
     {
-        apply_convolution(
+	    apply_convolution(
+                    state.range(0), 
+                    state.range(0), 
                     data_source + (unsigned) (dis(gen)), 
-                    state.range(0), 
-                    state.range(0), 
-                    pattern, 
                     KernelDim,
+                    (Double *) t_kernel,
+//                    pattern, 
                     result);
     }
 
@@ -64,14 +66,14 @@ BENCHMARK(BM_convolution)->DenseRange(DataSizeStep, MaxMatrixHeight, DataSizeSte
 
 void BM_convolution_mix(benchmark::State &state)
 {
-    auto pattern = (double *) generate_data(KernelDim * KernelDim);
-    auto data_source = (Double *) generate_data(MaxMatrixHeight * MaxMatrixWidth);
+    auto pattern = (Double *) generate_data(KernelDim * KernelDim);
+    auto data_source = (double *) generate_data(MaxMatrixHeight * MaxMatrixWidth);
     
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(
+    std::uniform_real_distribution<> dis(
             0, 
-            MaxMatrixHeight * MaxMatrixWidth - state.range(0) - 1);
+            MaxMatrixHeight * MaxMatrixWidth - state.range(0) * state.range(0) - 1);
 
     auto result = new double[MaxMatrixHeight * MaxMatrixWidth];
     
@@ -80,17 +82,17 @@ void BM_convolution_mix(benchmark::State &state)
     compiler.setFunction(
             apply_convolution_mix(
                 &compiler.getContext(), 
-                pattern, 
-                KernelDim));
-    auto *spec = reinterpret_cast<void (*)(const Double *, unsigned, unsigned, double *)>(compiler.compile());
+                KernelDim,
+                (Double *) t_kernel));
+    auto *spec = reinterpret_cast<void (*)(unsigned, unsigned, double *, double *)>(compiler.compile());
 
     for (auto _: state)
     {
 	    auto current_data = data_source + (unsigned) (dis(gen));
-        auto result = spec(
-                (Double *) (current_data), 
+        spec(
                 state.range(0), 
                 state.range(0),
+                (double *) (current_data), 
                 result);
     }
 

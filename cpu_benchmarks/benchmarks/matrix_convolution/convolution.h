@@ -9,18 +9,18 @@ struct Double {
 
 /// Basic non-specialized function
 void apply_convolution(
-           double *matrix, 
 		   unsigned matrix_height,
            unsigned matrix_width,
-		   const struct Double *kernel, 
+           double matrix[], 
 		   unsigned kernel_dim,
-           double *result);
+		   struct Double *kernel, 
+           double result[]);
 
 /// Generates specialized function on pattern
 void *apply_convolution_mix(
         void *context, 
-        const struct Double *kernel, 
-        unsigned kernel_dim);
+        unsigned kernel_dim,
+        struct Double *kernel); 
 
 #ifdef __cplusplus
 }

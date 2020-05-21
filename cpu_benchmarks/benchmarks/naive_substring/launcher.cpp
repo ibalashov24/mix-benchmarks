@@ -14,10 +14,10 @@
 //const long long DataSizeStep = 419430400;     // 400mb
 //const long long PatternLength = 200;          // 200 bytes
 
-const long long StartSize = 4194304;        // 400mb
+const long long StartSize = 52428800;        // 50mb
 const long long DataSourceSize = 10737418240; // 10gb
-const long long MaxDataSize = 33554432;     // 3200mb 
-const long long DataSizeStep = 4194304;     // 400mb
+const long long MaxDataSize = 419430400;     // 400mb 
+const long long DataSizeStep = 52428800;     // 50mb
 const long long PatternLength = 200;          // 200 bytes
 
 
@@ -63,7 +63,7 @@ void BM_naive_substring(benchmark::State &state)
     delete[] pattern;
     delete[] data_source;
 }                       
-BENCHMARK(BM_naive_substring)->DenseRange(StartSize, MaxDataSize, DataSizeStep);
+//BENCHMARK(BM_naive_substring)->DenseRange(StartSize, MaxDataSize, DataSizeStep);
 //BENCHMARK(BM_naive_substring)->DenseRange(419430400, 419430405, 1);
 
 void BM_naive_subtring_mix(benchmark::State &state)
@@ -101,5 +101,5 @@ void BM_naive_subtring_mix(benchmark::State &state)
     delete[] pattern;
     delete[] data_source;
 }
-//BENCHMARK(BM_naive_subtring_mix)->DenseRange(StartSize, MaxDataSize, DataSizeStep);
+BENCHMARK(BM_naive_subtring_mix)->DenseRange(StartSize, MaxDataSize, DataSizeStep);
 
