@@ -7,7 +7,7 @@
 ### Сборка и запуск (Ubuntu 18.04)
 
 1. Выбрать директорию бенчмарка нужного типа (CUDA/CPU) и войти в неё
-2. `git clone https://github.com/google/benchmark {cpu или cuda}_benchmarks/deps`
+2. `git clone https://github.com/google/benchmark deps`
 2. `mkdir build && cd build`
 3. `cmake -DCMAKE_BUILD_TYPE=Release ..` 
 4. `cmake --build .`
